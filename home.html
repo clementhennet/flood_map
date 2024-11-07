@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en" data-ja="true">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="./resources/ol.css">
+    <link rel="stylesheet" href="./resources/fontawesome-all.min.css">
+    <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
+    <link rel="stylesheet" href="./resources/qgis2web.css">
+    <title class="lang-ja">ジャカルタの低所得者コミュニティにおける水害レジリエンスと家計貯金</title>
+    <title class="lang-en">Monsoon Money: Flood Resilience and Budgeting in Jakarta’s Low-income Communities.</title>
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
+
+
+    <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* General Body Styling */
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      color: #333;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+      padding: 20px;
+    }
+
+    /* Header Styling */
+header {
+    display: block;
+    justify-content: space-between;  /* Distributes space between buttons */
+    align-items: center;
+  text-align: center;
+  padding: 20px;
+  background-color: #9abddc;
+  color: #fff;
+  font-size: 2.5em;
+}
+
+
+
+header h1 {
+  font-size: 2.5em;
+  font-weight: 700;
+}
+
+    /* Navigation Styling */
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    nav a {
+      color: #9abddc;
+      font-weight: bold;
+      text-decoration: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    nav a:hover {
+      background-color: #9abddc;
+      color: #fff;
+    }
+
+    /* Section Styling */
+    section {
+      margin-bottom: 40px;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Section Headings */
+    section h2 {
+      font-size: 1.75em;
+      color: #9abddc;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 8px;
+    }
+
+    /* Interactive Map Section */
+	.map-container {
+  width: 100%;
+  height: 500px; /* Fixed height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+    .map-container iframe {
+  width: 100%;
+  height: 100%; /* Matches the container height exactly */
+  border: none;
+  border-radius: 8px;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2em;
+      }
+      nav {
+        flex-direction: column;
+        gap: 10px;
+      }
+      section h2 {
+        font-size: 1.5em;
+      }
+	  .map-container iframe {
+  width: 100%;
+  height: 100%; /* Matches container height */
+}
+    }/* Style for the toggle button */
+#language-toggle {
+  display: inline-flex;
+  align-items: right;
+  cursor: pointer;
+  font-size: 1.2em; /* Matches header text size */
+  padding: 10px 20px; /* Adjust padding to match header size */
+  border: 2px solid #9abddc;
+  border-radius: 25px; /* Match header's rounded style */
+  background-color: #fff;
+  transition: background-color 0.3s, color 0.3s;
+  margin: 0;
+  height: 50px; /* Set height to match the header height */
+  order: 2;
+}
+
+/* Style for each language option */
+.toggle-option {
+  padding: 0 15px; /* Adjust padding for a balanced look */
+  transition: color 0.3s;
+}
+
+.toggle-option-en {
+  color: #9abddc;
+}
+
+.toggle-option-ja {
+  color: gray;
+}
+
+/* Highlighted active option */
+#language-toggle.active-en .toggle-option-en {
+  color: #fff;
+  background-color: #9abddc;
+}
+
+#language-toggle.active-ja .toggle-option-ja {
+  color: #fff;
+  background-color: #9abddc;
+}
+
+
+#menu {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background-color: #9abddc;  /* Matching the color */
+    transition: 0.3s;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+	order: 1;
+}
+
+#menu.open {
+    left: 0;
+}
+
+#menu-toggle {
+    order: 1; /* Move toggle menu to the left */
+    background-color: #9abddc;
+    color: white;
+    font-size: 18px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#menu-toggle:hover {
+    background-color: #357ab7;
+}
+
+#menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#menu li {
+    text-align: center;
+    padding: 15px 20px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #ddd;
+    font-size: 18px;  /* Matching font size */
+}
+
+#menu a {
+    color: #333;  /* Matching text color */
+    text-decoration: none;
+    font-weight: bold;  /* Matching font style */
+    display: block;  /* Makes the whole area clickable */
+}
+
+#menu a:hover {
+    background-color: #f8f8f8;
+}
+
+.name {
+	display: block;
+    text-align: center;
+    font-size: 0.8em; /* Much smaller font */
+    margin-top: 5px;
+    color: white; /* Optional: to make the name less prominent */
+    padding-top: 5px;
+	font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+h5 {
+    display: block;  /* Ensures h5 is block-level */
+    text-align: center;
+}
+
+.lang-en { display: none; }
+.lang-ja { display: none; }
+
+[data-lang="en"] .lang-en { display: block; }
+[data-lang="ja"] .lang-ja { display: block; }
+
+/* For Japanese Language */
+body[data-lang="ja"] {
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+/* For English Language */
+body[data-lang="en"] {
+    font-family: 'Roboto', sans-serif;
+}
+
+    </style>
+</head>
+
+<body>
+
+  <!-- Header Section -->
+  <header>
+<p><h5 class="lang-ja">ジャカルタの低所得者コミュニティにおける水害レジリエンスと家計貯金</h5></p>
+<p><h5 class="lang-en">Monsoon Money: Flood Resilience and Budgeting in Jakarta’s Low-income Communities.</h5></p>
+    <p><span class="name">Clément HENNET</span></p>
+  </header>
+
+
+  <!-- Navigation Menu -->
+  <nav>
+
+  	<a href="#" id="language-toggle" class="toggle-button">
+	<span class="toggle-option toggle-option-ja active" id="japanese-text">日本語</span> /
+	<span class="toggle-option toggle-option-en" id="english-text">English</span>
+	</a>
+	<button id="menu-toggle">☰</button>
+	<ul id="menu">
+    <a href="#introduction" class="lang-ja">要旨</a> 
+	<a href="#introduction" class="lang-en">Abstract</a>
+    <a href="#methods" class="lang-ja">研究概要</a>
+	<a href="#methods" class="lang-en">Research Methods</a>
+    <a href="#discussion">Discussion</a>
+    <a href="#findings" class="lang-ja">結果</a>
+	<a href="#findings" class="lang-en">Findings</a>
+    <a href="#map">Interactive Map</a>
+    <a href="#references" class="lang-ja">参考文献</a>
+	<a href="#references"class="lang-en" >References</a>
+	</ul>
+  </nav>
+
+  <!-- Introduction Section -->
+  <section id="Introduction">
+    <h2 class="lang-ja">要旨</h2>
+	<h2 class="lang-en">Abstract</h2>
+	<p class="lang-ja">ジャカルタは世界で最も急速に地盤沈下しつつある都市であり、対策は北部に偏るため、南ジャカルタでは住民が独自に対策を講じざるを得ない状況である。<br>
+本研究では、南ジャカルタのレンテン・アグン地区で行った被害者やコミュニティ代表者に対する半構造化インタビュー調査に基づき、水害常襲地に住む困窮世帯がリスクと家計貯金にどのように対処しているのかを考察した。また、インタビュー対象者のリスク回避を評価する行動実験も実施し、インドネシア政府の行政データも加味して質的理解を試みた。<br>
+これらを通じて以下の点が明らかになった。<br> ①住居や支援の格差が拡大し、多くの住民が災害貧困の罠に陥っている <br> ②数年ごとに発生する水害の頻度と日雇い労働者の短期的な貯蓄戦略とのあいだに不一致が生じている <br> ③実験で観察されたリスク追求行動が水害への備えに対する態度に影響を与え、貧困ライン近くにいる住民のリスクテイキング傾向と一致している。 </p>
+<p class="lang-en"> Flooding has become a distinctive feature of Jakarta, the world’s fastest-sinking city. Although northern districts are the most impacted, resulting in large-scale damages and thousands of displaced residents, the southern districts are by no means exempt from floods. Additionally, since current policies mainly target the northern areas, residents of South Jakarta are left alone to navigate flood resilience. <br>
+This research explores how economically constrained low-income households from South Jakarta’s flood-prone areas cope with the risks and manage their budget. This research was primarily based on fieldwork in Lenteng Agung, during which semi-structured interviews were conducted with residents who experienced floods as well as with community representatives. A standardized behavioral experiment to assess risk-aversion of the interviewees was also implemented to further interpret the interviewees’ decisions regarding flood preparation. Finally, administrative data from the government of Indonesia was used to provide a better understanding of the qualitative data collected in the field. <br>
+This research highlighted three phenomena. i) The existence of amplified inequalities experienced by low-income households regarding housing and relief pushing them into a disaster-poverty trap. ii) A mismatch between the frequency of floods, occurring every few years, and the short-term savings strategies practiced by daily-wage earners. iii) The risk-seeking behavior observed in the experiment provides additional insight into attitudes toward flood preparedness and aligns with existing literature on risk-taking tendencies among individuals living near the poverty line.<br> </p>
+</section>
+
+  <!-- Research Methods Section -->
+  <section id="methods">
+    <h2 class="lang-ja">研究概要</h2>
+	<h2 class="lang-en">Research Methods</h2>
+    <p>Describe the methods used in your research here. Include details about the study design, data collection, and analysis approach.</p>
+  </section>
+
+  <!-- Discussion Section -->
+  <section id="discussion">
+    <h2>Discussion</h2>
+    <p>This section covers the discussion of your findings. Analyze your results and explore their implications.</p>
+  </section>
+
+  <!-- Findings Section -->
+  <section id="findings">
+    <h2 class="lang-ja">結果</h2>
+	<h2 class="lang-en">Findings</h2>
+    <p>Summarize your key findings here. Highlight any significant results or insights that emerged from your research.</p>
+  </section>
+
+  <!-- Interactive Map Section -->
+  <section id="map">
+    <h2>Interactive Map</h2>
+    <div class="map-container">
+      <iframe src="https://clementhennet.github.io/flood_map/index.html"></iframe>
+    </div>
+  </section>
+
+  <!-- References Section -->
+  <section id="references">
+    <h2 class="lang-ja">参考文献</h2>
+	<h2 class="lang-en">References</h2>
+    <p>List your references here. You may format them in APA or any other citation style you prefer.</p>
+  </section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    changeLanguage('ja');  // Set Japanese as the default language on load
+	  document.body.style.fontFamily = '"Noto Sans JP", sans-serif';
+});
+
+let isEnglish = false; // Track the current language
+
+document.getElementById('language-toggle').addEventListener('click', function() {
+    isEnglish = !isEnglish; // Toggle language state
+    changeLanguage(isEnglish ? 'en' : 'ja'); // Change language based on the toggle state
+
+  // Change font when language is switched
+  if (isEnglish) {
+    document.body.style.fontFamily = 'Arial, sans-serif'; // Or any default font for English
+    document.getElementById('language-toggle').classList.add('active-en');
+    document.getElementById('language-toggle').classList.remove('active-ja');
+  } else {
+    document.body.style.fontFamily = '"Noto Sans JP", sans-serif'; // Apply Noto Sans JP for Japanese
+    document.getElementById('language-toggle').classList.add('active-ja');
+    document.getElementById('language-toggle').classList.remove('active-en');
+  }
+
+});
+
+function changeLanguage(language) {
+    // Hide all paragraphs, then show only the appropriate language
+    const allLangParagraphs = document.querySelectorAll('.lang-ja, .lang-en');
+    allLangParagraphs.forEach(p => {
+        p.style.display = 'none'; // Hide both languages initially
+    });
+
+    const activeLangParagraphs = document.querySelectorAll('.lang-' + language);
+    activeLangParagraphs.forEach(p => {
+        p.style.display = 'block'; // Show the selected language
+    });
+
+    // Toggle active class on language switch button
+    if (language === 'en') {
+        document.getElementById('language-toggle').classList.add('active-en');
+        document.getElementById('language-toggle').classList.remove('active-ja');
+    } else {
+        document.getElementById('language-toggle').classList.add('active-ja');
+        document.getElementById('language-toggle').classList.remove('active-en');
+    }
+	
+}
+
+
+ 
+ 
+ // Toggle menu
+document.getElementById("menu-toggle").addEventListener("click", function(event) {
+    event.stopPropagation();  // Prevent click from propagating to document
+    document.getElementById("menu").classList.toggle("open");
+});
+
+// Close menu if click happens outside or on menu button
+document.addEventListener("click", function(event) {
+    const menu = document.getElementById("menu");
+    const toggleButton = document.getElementById("menu-toggle");
+    
+    if (!menu.contains(event.target) && !toggleButton.contains(event.target)) {
+        menu.classList.remove("open");
+    }
+});
+
+// Close menu when any menu button is clicked
+const menuLinks = document.querySelectorAll("#menu a");
+menuLinks.forEach(link => {
+    link.addEventListener("click", () => {
+        document.getElementById("menu").classList.remove("open");
+    });
+});
+
+
+
+ 
+</script>
+
+
+</body>
+</html>
+
